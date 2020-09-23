@@ -4,7 +4,6 @@ This application allows you retrieve / listen to all your ohmstudio session mixd
 
 Developed by Fabien (a.k.a. Grooveman). Contributors irockus, jamie57lp.
 
-
 Instructions:
 Go to Ohmstudio.com web page and log in. Then type this address in the address bar:
 
@@ -17,3 +16,4 @@ Repeat the operation by replacing 0 by the next page number if you have more tha
 Then run the tool, it will automatically load and merge all the sessions for you.
 
  This app represents a lot of after hours work, so if you'd like to support my future developments, you can click on the Donate button and pay my a coffee, thanks!
+[![Donate](https://www.paypal.com/donate/?cmd=_donations&business=fabien@onepost.net&lc=CAN&item_name=Support%20my%20development%20efforts%20and%20pay%20me%20a%20coffee%20:)%20Thank%20you!&currency_code=CAD&bn=PP%2dDonationsBF)
