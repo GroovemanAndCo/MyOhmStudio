@@ -1,0 +1,140 @@
+﻿<controls:AdonisWindow x:Class="MyOhmSessions.UI.AboutDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        mc:Ignorable="d"
+        Title="{Binding OnTitle}" Height="600" Width="800"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Background="Black"
+        Icon="/MyOhmSessions;component/Images/info.png"
+        >
+    <Window.RenderTransform>
+        <RotateTransform x:Name="MyAnimatedTransform" Angle="0" />
+    </Window.RenderTransform>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard >
+                    <DoubleAnimation
+                        Storyboard.TargetName="MyAnimatedTransform"
+                        Storyboard.TargetProperty="(RotateTransform.Angle)"
+                        From="180.0" To="360" Duration="0:0:0.33" >
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    <Grid>
+        <Grid.Background>
+            <ImageBrush TileMode="None" Stretch="Fill" ImageSource="../Images/OhmCards.jpg" Opacity="0.33" />
+        </Grid.Background>
+
+    <Grid>
+        <DockPanel >
+            <WrapPanel DockPanel.Dock="Top" Margin="0,2 2,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Margin="0,0 1,0" Click="OnOpenOugFbPage" >
+                    <Image Height="32" Source="../Images/ougBanner.png"></Image>
+                </Button>
+                <Button Margin="0,0 1,0" Click="OnDiscordRefugePage" >
+                    <Image Height="32" Source="../Images/discord.png"></Image>
+                </Button>
+                <Button >
+                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.ohmstudio.com" BaselineAlignment="Top" ToolTip="Open the ohmstudio web page." > <Image Height="32" Source="../Images/ohm_logo.png" /> </Hyperlink>
+                </Button>
+
+            </WrapPanel>
+            <Grid DockPanel.Dock="Bottom" Height="48" Margin="5,5, 5, 0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Name="ShowAtStartup" Grid.Column="0" Foreground="White"  Content="Show at startup" IsChecked="True" Click="OnShowAtStartup"/>
+                <StackPanel Background="Transparent" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,0" >
+                    <Button Click="OnDonateBtn" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Pay Me a Coffee :)">
+                        <Image Source="../Images/donate.png" Height="24" VerticalAlignment="Top" Margin="0,-5"/>
+                    </Button>
+
+                    <Button Click="OnSpecialThanks" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Special Thanks">
+                        <Image Source="../Images/credits.png" VerticalAlignment="Top" Margin="0,-5"/>
+                    </Button>
+                    <Button Click="OnLicense" Width="60" Background="Transparent" BorderThickness="0" ToolTip="License">
+                        <Image Source="../Images/license.png" VerticalAlignment="Top" Margin="0,-5"/>
+                    </Button>
+                </StackPanel>
+                <Button    Grid.Column="2" Margin="5,0" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" BorderThickness="0" 
+                           Click="OnOK" IsDefault="True" IsCancel="true" ToolTip="Got It!">
+                    <Image Source="../Images/OK.png" />
+                </Button>
+            </Grid>
+            <TextBlock Margin="0,25" FontSize="14" Foreground="White" Width="610" TextWrapping="Wrap" Background="#250000C0">
+                <Grid Margin="0,25">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/> 
+                        <ColumnDefinition Width="*"/> 
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"  FontSize="16" FontWeight="Bold" Foreground="Goldenrod" Text=" Description" />
+                    <TextBlock Grid.Row="0" Grid.Column="1"  FontSize="16" FontWeight="Bold" TextWrapping="Wrap" Foreground="LightBlue" >
+                        <Run Text="Retrieve and listen to all your ohmstudio session mixdowns offline." />
+                        <Run Text="Browse through them and get a consolidated catalog."/>
+                    </TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="0"  FontSize="16" FontWeight="Bold" Foreground="Goldenrod" Text=" Instructions" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Go to Ohmstudio.com web page and log in." />
+                    <TextBlock Grid.Row="3" Grid.Column="1" >
+                        <Run Text="Then type this address in the address bar:"/>
+                        <LineBreak/>
+                        <Run Text="    "/>
+                        <Hyperlink Foreground="Yellow" 
+                                   RequestNavigate="Hyperlink_RequestNavigate" 
+                                   NavigateUri="http://www.ohmstudio.com/v3/feed/my_projects?page=0"
+                                   BaselineAlignment="Top" 
+                                   ToolTip="Open the current selection web page." >
+                            <Run Text="http://www.ohmstudio.com/v3/feed/my_projects?page=0"/>
+                        </Hyperlink>
+
+                    </TextBlock> 
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Now copy the full text content and save it as mypage0.json to your Music folder." />
+                    <TextBlock Grid.Row="6" Grid.Column="1">
+                        <Run Text="If you have more than 1000 projects:" />
+                        <LineBreak/>
+                        <Run  Text="    Repeat the operation by replacing 0 by the next page number." />
+                    </TextBlock> 
+                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Then run the tool, it will automatically load and merge all the sessions for you." />
+                    <TextBlock Grid.Row="9" Grid.Column="0" FontWeight="Bold" Foreground="Goldenrod"  TextWrapping="Wrap" Text="Development" />
+                    <TextBlock Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Fabien (a.k.a. Grooveman)." />
+                    <TextBlock Grid.Row="11" Grid.Column="0" FontWeight="Bold" Foreground="Goldenrod"  TextWrapping="Wrap" Text="Contributors" />
+                    <TextBlock Grid.Row="11" Grid.Column="1" TextWrapping="Wrap" Text="irockus, jamie57lp." />
+                    <TextBlock Grid.Row="13" Grid.Column="0" HorizontalAlignment="Center" >
+                        <Image  Margin="-5,5" Height="48" Source="../Images/overtime.png" />
+                    </TextBlock>
+                    <TextBlock Grid.Row="13" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center"
+                               Text="This app represents a lot of after hours work, so if you'd like to support my future developments, please click on the Donate button down below and pay my a coffee :)" />
+                </Grid>
+            </TextBlock>
+        </DockPanel>
+    </Grid>
+    </Grid>
+</controls:AdonisWindow>

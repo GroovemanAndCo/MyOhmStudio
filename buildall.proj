@@ -1,0 +1,70 @@
+<!--
+ This file is part of the MyOhmSessions distribution (https://github.com/GroovemanAndCo/MyOhmStudio).
+ Copyright (c) 2020 Fabien (https://github.com/fab672000)
+ 
+ This program is free software: you can redistribute it and/or modify  
+ it under the terms of the GNU General Public License as published by  
+ the Free Software Foundation, version 3.
+ 
+ This program is distributed in the hope that it will be useful, but 
+ WITHOUT ANY WARRANTY; without even the implied warranty of 
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License 
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AppVersion>1.3.1</AppVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Solution Include="**\*.sln" /> 
+  </ItemGroup>
+
+  <Target Name="Build" DependsOnTargets="SubstituteInFiles">
+    <MSBuild Projects="@(Solution)" Targets="Build" Properties="Configuration=Release" StopOnFirstFailure="true" />
+    <!-- <MSBuild Projects="@(Solution)" Targets="Build" Properties="Configuration=Release;Platform=x86" /> -->
+    <Message Text="Building configuration $(Configuration) with output path $(OutputPath)" Importance="High" />
+  </Target>
+  <ItemGroup>
+    <SubstituteFiles Include="**\*.in" />
+  </ItemGroup>
+
+  <Target Name="SubstituteInFiles">
+    <ReplaceFileText 
+      InputFilename="@(SubstituteFiles)"
+      OutputFilename="@(SubstituteFiles -> '%(relativedir)%(Filename)')"
+      MatchExpression="\$version\$" 
+      ReplacementText="$(AppVersion)" />
+  </Target>
+  
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <InputFilename ParameterType="System.String" Required="true" />
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <MatchExpression ParameterType="System.String" Required="true" />
+      <ReplacementText ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        var ins = InputFilename.Split(';');
+        var outs = OutputFilename.Split(';');
+        for (var i=0; i < ins.Length; i++) {
+          Console.WriteLine("Substituting "+ ins[i] + " to " + outs[i]);    
+				  File.WriteAllText(
+					  outs[i],
+					  Regex.Replace(File.ReadAllText(ins[i]), MatchExpression, ReplacementText)
+					  );
+        }
+			  ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

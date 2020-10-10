@@ -1,0 +1,53 @@
+﻿MyOhmSessions
+  Copyright (c) 2020 Fabien (https://github.com/fab672000)
+
+This programs allows to retrieve and listen to all your ohmstudio session mixdowns offline.
+
+This program is free software. 
+It comes without any warranty, to the extent permitted by applicable law.
+You can redistribute it under the terms of the GPL v3.0 license.
+
+It reuses the following free software libraries:
+
+Id                                     LicenseUrl                                                            
+--                                     ----------                                                            
+System.Runtime.CompilerServices.Unsafe https://licenses.nuget.org/MIT                                        
+System.Threading.Tasks.Extensions      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.ValueTuple                      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+Carbon.Data.Protection                 https://licenses.nuget.org/MIT                                        
+Carbon.Packaging                       https://licenses.nuget.org/MIT                                        
+Carbon.Storage                         https://licenses.nuget.org/MIT                                        
+Carbon.Versioning                      https://licenses.nuget.org/MIT                                        
+CsvHelper                              https://licenses.nuget.org/MS-PL%20OR%20Apache-2.0                    
+Microsoft.Bcl.AsyncInterfaces          https://licenses.nuget.org/MIT                                        
+Microsoft.Bcl.HashCode                 https://licenses.nuget.org/MIT                                        
+Microsoft.CSharp                       https://licenses.nuget.org/MIT                                        
+morelinq                               https://aka.ms/deprecateLicenseUrl                                    
+NAudio                                 https://github.com/naudio/NAudio/blob/master/license.txt              
+NAudio.Flac                                                                                                  
+NAudio.Lame                            https://aka.ms/deprecateLicenseUrl                                    
+NAudio.Vorbis                          https://aka.ms/deprecateLicenseUrl                                    
+NAudio.Wma                             http://naudio.codeplex.com/license                                    
+Newtonsoft.Json                        https://licenses.nuget.org/MIT                                        
+NLog                                   https://github.com/NLog/NLog/blob/master/LICENSE.txt                  
+NVorbis                                https://aka.ms/deprecateLicenseUrl                                    
+Octokit                                https://github.com/octokit/octokit.net/blob/master/LICENSE.txt        
+Semver                                 https://licenses.nuget.org/MIT                                        
+System.Buffers                         https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.Memory                          https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.Numerics.Vectors                https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.Runtime.CompilerServices.Unsafe https://licenses.nuget.org/MIT                                        
+System.Text.Encodings.Web              https://licenses.nuget.org/MIT                                        
+System.Text.Json                       https://licenses.nuget.org/MIT                                        
+System.Threading.Tasks.Extensions      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.ValueTuple                      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+AdonisUI                               https://licenses.nuget.org/MIT                                        
+AdonisUI.ClassicTheme                  https://licenses.nuget.org/MIT                                        
+Newtonsoft.Json                        https://licenses.nuget.org/MIT                                        
+NLog                                   https://github.com/NLog/NLog/blob/master/LICENSE.txt                  
+NLog.Schema                            https://github.com/NLog/NLog/blob/master/LICENSE.txt                  
+NlogViewer                                                                                                   
+slf4net                                https://licenses.nuget.org/MIT                                        
+slf4net.NLog                           https://licenses.nuget.org/MIT                                        
+WindowsAPICodePack-Core                https://github.com/aybe/Windows-API-Code-Pack-1.1/blob/master/LICENCE 
+WindowsAPICodePack-Shell               http://code.msdn.microsoft.com/WindowsAPICodePack/Project/License.aspx
