@@ -1,6 +1,6 @@
-# MyOhmStudio
+# MyOhmStudioSessions
 
-This application allows you retrieve / listen to all your ohmstudio session mixdowns, to browse through them and to provide you with a consolidated catalog.
+This first application allows you retrieve / listen to all your ohmstudio session mixdowns, to browse through them and to provide you with a consolidated catalog.
 Developed by Fabien (a.k.a. Grooveman). Contributors irockus, jamie57lp.
 Instructions:
 Go to Ohmstudio.com web page and log in. Then type this address in the address bar:
