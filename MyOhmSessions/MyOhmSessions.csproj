@@ -42,6 +42,9 @@
   <PropertyGroup>
     <ApplicationIcon>ohm_icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>MyOhmSessions.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdonisUI, Version=1.16.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AdonisUI.1.16.0\lib\net45\AdonisUI.dll</HintPath>
@@ -105,13 +108,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UiUtils.cs" />
     <Compile Include="UI\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\ColorFromSchemeConverter.cs" />
+    <Compile Include="UI\UiUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UI\MainWindow.xaml.cs">
@@ -122,16 +127,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="Images\download.png" />
     <Resource Include="Images\license.png" />
+    <Resource Include="Images\yinyang.png" />
+    <Resource Include="Images\downloadall.png" />
+    <Resource Include="Images\stop.png" />
     <Content Include="install\install.iss" />
     <Content Include="install\install.iss.in" />
     <None Include="NLog.config">
@@ -141,10 +145,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -219,6 +219,6 @@
     <Error Condition="!Exists('..\packages\Tools.InnoSetup.6.0.5\build\Tools.InnoSetup.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tools.InnoSetup.6.0.5\build\Tools.InnoSetup.props'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)packages\Tools.InnoSetup.6.0.5\tools\ISCC.exe  $(ProjectDir)install\install.iss</PostBuildEvent>
+    <PostBuildEvent  Condition=" '$(Configuration)' == 'Release' ">$(SolutionDir)packages\Tools.InnoSetup.6.0.5\tools\ISCC.exe  $(ProjectDir)install\install.iss</PostBuildEvent>
   </PropertyGroup>
 </Project>

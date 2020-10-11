@@ -15,31 +15,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using MyOhmSessions.Annotations;
 using MyOhmSessions.Properties;
 using OhmstudioManager;
+using OhmstudioManager.ViewModel;
 
 namespace MyOhmSessions.UI
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class AboutDialog
+    public partial class AboutDialog : INotifyPropertyChanged
     {
-        StateOwner StateOwner { get; }
+        IAppStateOwner AppStateOwner { get; }
+        public MainViewModel  MainViewModel {get;}
 
-        public AboutDialog(MainWindow owner)
+        public AboutDialog(MainWindow owner, MainViewModel mainViewModel)
         {
-            this.Owner = owner;
-            StateOwner = owner;
+            MainViewModel = mainViewModel;
+            Owner = owner;
+            AppStateOwner = owner;
             InitializeComponent();
-            ShowAtStartup.IsChecked = Settings.Default.StartupShowAbout; 
-
         }
 
         public static Version Version => typeof(AboutDialog).Assembly.GetName().Version;
@@ -48,15 +52,12 @@ namespace MyOhmSessions.UI
 
         public string OnTitle => $"About {AppName} {Version.Major}.{Version.Minor}.{Version.Build}";
 
-        private void OnOK(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void OnOK(object sender, RoutedEventArgs e) => Close();
 
         private void OnSpecialThanks(object sender, RoutedEventArgs e)
         {
             var msg = "A very special thanks to: irockus, Flavio67, jazzcrime, jamie57lp for their outstanding support!";
-            StateOwner.DisplayInfoDialog(msg, "Special Thanks!");
+            AppStateOwner.DisplayInfoDialog(msg, "Special Thanks!");
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e) => Process.Start(e.Uri.ToString());
@@ -84,12 +85,13 @@ namespace MyOhmSessions.UI
         }
 
         private void OnDonateBtn(object sender, RoutedEventArgs e) => OnDonate();
+        
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnShowAtStartup(object sender, RoutedEventArgs e)
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (!(sender is CheckBox c)) return;
-            Settings.Default.StartupShowAbout = c.IsChecked ?? false;
-            Settings.Default.Save();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

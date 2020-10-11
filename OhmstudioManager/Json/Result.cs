@@ -65,6 +65,8 @@ namespace OhmstudioManager.Json
         public string MixdownFileName => $"{nid:D7}_{(FileUtils.FilterCharsFromFileName(title) ?? "unknown_title")}.m4a";
 
         public string m4a => mixdown?.Length>0 ?  mixdown?[0]?.url_m4a : null;
+        public bool HasMixdown => mixdown?.Length>0;
+        public string Image => mixdown?.Length>0 ? mixdown?[0]?.url_png : null;
         private DateTime EpochToDateTime(long epoch)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch);

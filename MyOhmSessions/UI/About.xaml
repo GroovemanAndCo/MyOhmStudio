@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
         Title="{Binding OnTitle}" Height="600" Width="800"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Background="Black"
         Icon="/MyOhmSessions;component/Images/info.png"
         >
     <Window.RenderTransform>
@@ -29,48 +29,29 @@
         </EventTrigger>
     </Window.Triggers>
     <Grid>
-        <Grid.Background>
-            <ImageBrush TileMode="None" Stretch="Fill" ImageSource="../Images/OhmCards.jpg" Opacity="0.33" />
-        </Grid.Background>
-
-    <Grid>
-        <DockPanel >
-            <WrapPanel DockPanel.Dock="Top" Margin="0,2 2,0" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Margin="0,0 1,0" Click="OnOpenOugFbPage" >
+    <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <Grid Background="Black">
+        <DockPanel Grid.Row="0" >
+            <DockPanel.Background>
+                <ImageBrush TileMode="None" Stretch="Fill" ImageSource="../Images/OhmCards.jpg" Opacity=".33" />
+            </DockPanel.Background>
+            <WrapPanel Background="Transparent" DockPanel.Dock="Top" Margin="0,2 2,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Background="Transparent" BorderBrush="Black" Margin="0,0 1,0" Click="OnOpenOugFbPage" >
                     <Image Height="32" Source="../Images/ougBanner.png"></Image>
                 </Button>
-                <Button Margin="0,0 1,0" Click="OnDiscordRefugePage" >
+                <Button Background="Transparent" BorderBrush="Black" Margin="0,0 1,0" Click="OnDiscordRefugePage" >
                     <Image Height="32" Source="../Images/discord.png"></Image>
                 </Button>
-                <Button >
-                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.ohmstudio.com" BaselineAlignment="Top" ToolTip="Open the ohmstudio web page." > <Image Height="32" Source="../Images/ohm_logo.png" /> </Hyperlink>
+                <Button Background="Transparent" BorderBrush="Black">
+                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="http://www.ohmstudio.com" BaselineAlignment="Top" ToolTip="Open the ohmstudio web page." >
+                         <Image Height="32" Source="../Images/ohm_logo.png" />
+                    </Hyperlink>
                 </Button>
 
             </WrapPanel>
-            <Grid DockPanel.Dock="Bottom" Height="48" Margin="5,5, 5, 0" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <CheckBox Name="ShowAtStartup" Grid.Column="0" Foreground="White"  Content="Show at startup" IsChecked="True" Click="OnShowAtStartup"/>
-                <StackPanel Background="Transparent" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,0" >
-                    <Button Click="OnDonateBtn" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Pay Me a Coffee :)">
-                        <Image Source="../Images/donate.png" Height="24" VerticalAlignment="Top" Margin="0,-5"/>
-                    </Button>
-
-                    <Button Click="OnSpecialThanks" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Special Thanks">
-                        <Image Source="../Images/credits.png" VerticalAlignment="Top" Margin="0,-5"/>
-                    </Button>
-                    <Button Click="OnLicense" Width="60" Background="Transparent" BorderThickness="0" ToolTip="License">
-                        <Image Source="../Images/license.png" VerticalAlignment="Top" Margin="0,-5"/>
-                    </Button>
-                </StackPanel>
-                <Button    Grid.Column="2" Margin="5,0" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" BorderThickness="0" 
-                           Click="OnOK" IsDefault="True" IsCancel="true" ToolTip="Got It!">
-                    <Image Source="../Images/OK.png" />
-                </Button>
-            </Grid>
             <TextBlock Margin="0,25" FontSize="14" Foreground="White" Width="610" TextWrapping="Wrap" Background="#250000C0">
                 <Grid Margin="0,25">
 
@@ -135,6 +116,40 @@
                 </Grid>
             </TextBlock>
         </DockPanel>
-    </Grid>
+        </Grid>
+        <Grid Grid.Row="1"  Height="48" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Name="cbShowAtStartup" Grid.Column="0" Content="Show at startup" 
+                      IsChecked="{Binding MainViewModel.ShowAboutAtStartup}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" >
+                <Button Margin="0,1,0,0"
+                        Click="OnDonateBtn" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Pay Me a Coffee :)">
+                    <Image Source="../Images/donate.png" Height="24" VerticalAlignment="Top" Margin="0,-5"/>
+                </Button>
+
+                <Button Margin="0,1,0,0"
+                        Click="OnSpecialThanks" Width="60" Background="Transparent" BorderThickness="0" ToolTip="Special Thanks">
+                    <Image Source="../Images/credits.png" VerticalAlignment="Top" Margin="0,-5"/>
+                </Button>
+                <Button Margin="0,1,0,0"
+                        Click="OnLicense" Width="60" Background="Transparent" BorderThickness="0" ToolTip="License">
+                    <Image Source="../Images/license.png" VerticalAlignment="Top" Margin="0,-5"/>
+                </Button>
+            </StackPanel>
+            <Button    Grid.Column="2" Width="60" HorizontalAlignment="Right" 
+                    Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                    Margin="0,1,0,0"
+                       Click="OnOK" 
+                       IsDefault="True" IsCancel="true" 
+                       ToolTip="Got It!"
+                       Content="OK" FontWeight="Bold"
+                        >
+                <!--<Image Source="../Images/OK.png" />-->
+            </Button>
+        </Grid>
     </Grid>
 </controls:AdonisWindow>

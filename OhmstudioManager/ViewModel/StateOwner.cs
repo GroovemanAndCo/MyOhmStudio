@@ -15,12 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OhmstudioManager
+namespace OhmstudioManager.ViewModel
 {
-    public interface StateOwner
+    public interface IAppStateOwner : IAppColorSchemeSetter
     {
-        string DestinationFolder { get; }
-        bool AutoPlaySetting {get;}
         void DisplayErrorDialog(string message, string title);
         void DisplayInfoDialog(string message, string title);
         bool DisplayInfoDialogOkCancel(string message, string title);

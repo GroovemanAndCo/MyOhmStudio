@@ -24,6 +24,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using AdonisUI;
@@ -32,6 +34,7 @@ using NLog;
 using OhmstudioManager;
 using OhmstudioManager.Json;
 using OhmstudioManager.Utils;
+using OhmstudioManager.ViewModel;
 using Application = System.Windows.Forms.Application;
 using Button = System.Windows.Controls.Button;
 using Cursors = System.Windows.Forms.Cursors;
@@ -46,9 +49,8 @@ namespace MyOhmSessions.UI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : INotifyPropertyChanged, StateOwner
+    public partial class MainWindow : INotifyPropertyChanged, IAppStateOwner
     {
-        private Result _currentItem;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #region Crash Handling
@@ -132,32 +134,40 @@ namespace MyOhmSessions.UI
         }
         #endregion
 
+        /// <summary>
+        /// Main Application Window constructor
+        /// </summary>
         public MainWindow()
         {
             SetupUncaughtExceptionHandlers();
             UiUtils.CursorStartWait();
-            ResourceLocator.SetColorScheme(System.Windows.Application.Current.Resources, ResourceLocator.DarkColorScheme);
-            MainViewModel = new MainViewModel(this)
-            {
-                InitialSliderOffsetPct = Settings.Default.UserSongOffset
-            };
+            MainViewModel = new MainViewModel(this);
             InitializeComponent();
+            SetColorScheme(MainViewModel.AppLightColorScheme==true ? AppColorScheme.Light : AppColorScheme.Dark);
+
             Logger.Info("Window components initialized.");
             MainViewModel.LoadJson();
             CurrentItems = PopulateListView(lvDataBinding);
-            CurrentItem = CurrentItems?[0];
+            MainViewModel.CurrentItem = CurrentItems?[0];
             UiUtils.CursorStopWait();
         }
 
-        public string DestinationFolder
+        /// <summary>
+        /// AdonisUI concrete implementation for color scheme setting
+        /// </summary>
+        /// <param name="appColorScheme"></param>
+        public void SetColorScheme(AppColorScheme appColorScheme)
         {
-            get => _destinationFolder;
-            set 
+            switch (appColorScheme)
             {
-                if (string.CompareOrdinal(_destinationFolder, value) == 0) return;
-                Settings.Default.UserDestinationFolder = _destinationFolder = value;
-                Settings.Default.Save();
-                OnPropertyChanged();
+                case AppColorScheme.Dark:
+                    ResourceLocator.SetColorScheme(System.Windows.Application.Current.Resources, ResourceLocator.DarkColorScheme); 
+                    break;
+                case AppColorScheme.Light:
+                    ResourceLocator.SetColorScheme(System.Windows.Application.Current.Resources, ResourceLocator.LightColorScheme); 
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(appColorScheme), appColorScheme, null);
             }
         }
 
@@ -179,7 +189,6 @@ namespace MyOhmSessions.UI
             return list;
         }
 
-        private string _destinationFolder = RetrieveDefaultDestinationFolder();
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e) => Process.Start(e.Uri.ToString());
 
         private Result[] _currentItems;
@@ -196,16 +205,6 @@ namespace MyOhmSessions.UI
             }
         }
 
-        public Result CurrentItem
-        {
-            get => _currentItem;
-            private set
-            {
-                if (Equals(value, _currentItem)) return;
-                _currentItem = value;
-                OnPropertyChanged();
-            }
-        }
         private string _matching;
         private bool _updatingView;
         public string Matching
@@ -254,9 +253,9 @@ namespace MyOhmSessions.UI
         private void LvDataBinding_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_updatingView) return;
-            CurrentItem = lvDataBinding?.SelectedItem as Result;
-            var mix = CurrentItem?.ExtractMixdown();
-            if (!string.IsNullOrEmpty(mix)) MainViewModel.PlayLink(mix, CurrentItem);
+            MainViewModel.CurrentItem = lvDataBinding?.SelectedItem as Result;
+            var mix = MainViewModel.CurrentItem?.ExtractMixdown();
+            if (!string.IsNullOrEmpty(mix)) MainViewModel.PlayLink(mix, MainViewModel.CurrentItem);
 
         }
 
@@ -296,7 +295,10 @@ namespace MyOhmSessions.UI
             BackgroundTaskStopped = false;
             UpdateDlStatus("Downloading... ");
 
-            button.Content = "Cancel";
+            var saveImage = ImgDlAll.Source;
+            var saveTooltip = button.ToolTip;
+            button.ToolTip = "Cancel downloads";
+            ImgDlAll.Source = new BitmapImage(new Uri("../Images/stop.png", UriKind.Relative));
 
             void Report(double p) => DlProgress.Dispatcher.Invoke(() => DlProgress.Value = p);
             m_cancelTokenSource = new CancellationTokenSource();
@@ -312,9 +314,11 @@ namespace MyOhmSessions.UI
             }
             finally
             {
-                button.Content = "Download All";
+                ImgDlAll.Source = saveImage;
+                button.ToolTip = saveTooltip;
                 BackgroundTaskStopped = true;
                 m_cancelTokenSource = null;
+                Report(0);
             }
         }
 
@@ -322,15 +326,15 @@ namespace MyOhmSessions.UI
         {
             var index = lvDataBinding.SelectedIndex;
             if (index < 0 || index > MainViewModel.Current.result.Length) return;
-            CurrentItem = MainViewModel.Current.result[index];
+            MainViewModel.CurrentItem = MainViewModel.Current.result[index];
 
             try
             {
-                var uri = CurrentItem.mixdown[0].url_m4a;
+                var uri = MainViewModel.CurrentItem.mixdown[0].url_m4a;
                 if (string.IsNullOrWhiteSpace(uri)) return;
-                if (HttpUtils.DownloadFile(uri, CurrentItem.MixdownFileName, MainViewModel.MixdownFolder))
+                if (HttpUtils.DownloadFile(uri, MainViewModel.CurrentItem.MixdownFileName, MainViewModel.MixdownFolder))
                 {
-                    Logger.Info($"Successfully downloaded mixdown '{uri}' for title '{CurrentItem.title}' ");
+                    Logger.Info($"Successfully downloaded mixdown '{uri}' for title '{MainViewModel.CurrentItem.title}' ");
                 }
             }
             catch (Exception ex)
@@ -361,12 +365,6 @@ namespace MyOhmSessions.UI
         {
             try
             {
-                if (Settings.Default.UserSongOffset != MainViewModel.InitialSliderOffsetPct)
-                {
-                    Settings.Default.UserSongOffset = MainViewModel.InitialSliderOffsetPct;
-                    Settings.Default.Save();
-                }
-
                 MainViewModel.OnClosing();
                 BackgroundTaskCancel();
 
@@ -378,20 +376,9 @@ namespace MyOhmSessions.UI
             base.OnClosing(e);
         }
 
-        public static string RetrieveDefaultDestinationFolder()
-        {
-            var settingsFolder = Settings.Default.UserDestinationFolder;
-            if (string.IsNullOrWhiteSpace(settingsFolder))
-            {
-                settingsFolder = Settings.Default.UserDestinationFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
-                Settings.Default.Save();
-            }
-            return settingsFolder;
-        }
-
         private void OnOpenJson(object sender, RoutedEventArgs e)
         {
-            var fileName = UiUtils.AskUserForFilename(DestinationFolder, ".json");
+            var fileName = UiUtils.AskUserForFilename(MainViewModel.DestinationFolder, ".json");
             if (!string.IsNullOrWhiteSpace(fileName))
             {
                 var path = Path.GetFullPath(fileName);
@@ -399,7 +386,7 @@ namespace MyOhmSessions.UI
                 MainViewModel.Reset();
                 MainViewModel.LoadJson(path);
                 CurrentItems = PopulateListView(lvDataBinding, Matching);
-                CurrentItem = CurrentItems?[0];
+                MainViewModel.CurrentItem = CurrentItems?[0];
 
             }
         }
@@ -419,32 +406,11 @@ namespace MyOhmSessions.UI
 
         private void OnAbout(object sender, RoutedEventArgs e)
         {
-            var About = new AboutDialog(this);
+            var About = new AboutDialog(this, MainViewModel);
             About.ShowDialog();
         }
 
         private void BtnDonate_Click(object sender, EventArgs e) => AboutDialog.OnDonate();
-        public bool AutoPlaySetting
-        {
-            get => _autoPlaySetting;
-            set
-            {
-                if (_autoPlaySetting == value) return;
-                
-                Settings.Default.UserAutoPlayOn = _autoPlaySetting = value;
-                Settings.Default.Save();
-                OnPropertyChanged();
-                if (_autoPlaySetting)
-                {
-                    var mix = CurrentItem?.ExtractMixdown();
-                    MainViewModel.PlayLink(mix, CurrentItem);
-                }
-                else MainViewModel.PlayLink(null);
-
-            }
-        }
-
-        private bool _autoPlaySetting = Settings.Default.UserAutoPlayOn;
 
         private void OnShowMatchesFor(object sender, RoutedEventArgs e)
         {
@@ -452,15 +418,6 @@ namespace MyOhmSessions.UI
             Matching = tbMatch.Text;
         }
 
-        private void OnSaveToFolder(object sender, RoutedEventArgs e)
-        {
-            var folder = UiUtils.AskUserForFolder(DestinationFolder, "Select MyOhmSessions destination folder");
-            if (!string.IsNullOrEmpty(folder) ) 
-            {
-                DestinationFolder = folder;
-            }
-
-        }
         public void DisplayErrorDialog(string message, string title)
         {
             Logger.Error($"Error Dialog: '{message}' with title '{title}'");
@@ -491,7 +448,7 @@ namespace MyOhmSessions.UI
 
         public void OnPlaybackStopped()
         {
-            if (AutoPlaySetting && MainViewModel.IsStopped && lvDataBinding!= null)
+            if (MainViewModel.AutoPlaySetting && MainViewModel.IsStopped && lvDataBinding!= null)
             {
                 var index = lvDataBinding.SelectedIndex;
                 var total = lvDataBinding.Items.Count;
@@ -520,7 +477,7 @@ namespace MyOhmSessions.UI
         private void OnPlayerRewind(object sender, RoutedEventArgs e)      => MainViewModel.PlayerControl(PlayerAction.Rewind);
         private void OnPlayerStop(object sender, RoutedEventArgs e)
         {
-            AutoPlaySetting = false;
+            MainViewModel.AutoPlaySetting = false;
             MainViewModel.PlayerControl(PlayerAction.Stop);
         }
 
@@ -528,10 +485,12 @@ namespace MyOhmSessions.UI
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (Settings.Default.StartupShowAbout)
+            if (MainViewModel.ShowAboutAtStartup)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action (() => new AboutDialog(this).ShowDialog()) );
+                Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action (() => new AboutDialog(this, MainViewModel).ShowDialog()) );
             }
         }
+
+        private void OnSaveToFolder(object sender, RoutedEventArgs e) => MainViewModel.OnSaveToFolder(sender, e);
     }
 }

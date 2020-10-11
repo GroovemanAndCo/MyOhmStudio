@@ -30,6 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using OhmstudioManager.Properties;
+using OhmstudioManager.ViewModel;
 
 namespace OhmstudioManager
 
@@ -39,15 +42,15 @@ namespace OhmstudioManager
         public string DatabaseDir => Path.Combine(MyDocumentsFolder, ".myohmdb");
         public string ProjectsDir => Path.Combine(DatabaseDir, "projects");
         public string MyMusicFolder => Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
-        public string MyDocumentsFolder=> Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        public string MyDocumentsFolder => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
         private const string AvatarImages = @"sites/default/files/imagecache/avatar_pic/pictures";
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private StateOwner StateOwner { get; }
+        private IAppStateOwner AppStateOwner { get; }
 
-        public MainViewModel(StateOwner parent) : base(parent)
+        public MainViewModel(IAppStateOwner parent) : base(parent)
         {
-            StateOwner = parent;
+            AppStateOwner = parent;
             UrlBase = "https://www.ohmstudio.com/v3/feed/my_projects_p?page=";
             CreateCacheFolders();
         }
@@ -229,9 +232,9 @@ namespace OhmstudioManager
         public void AddJsonToCurrent(JsonPagedRoot json)
         {
             var toAdd = new List<Result>();
-            if (json.pager!=null) Logger.Info($"Converting page {json.pager.current+1} of {json.pager.total} ...");
+            if (json.pager != null) Logger.Info($"Converting page {json.pager.current + 1} of {json.pager.total} ...");
 
-            foreach(var p in json.sessions)
+            foreach (var p in json.sessions)
             {
                 var s = p.session;
                 if (s == null) continue;
@@ -301,7 +304,7 @@ namespace OhmstudioManager
             var Catalog = new List<Result>(2000);
 
             report(progressPct);
-            var subFolderPath = StateOwner.DestinationFolder;
+            var subFolderPath = DestinationFolder;
 
             Catalog.AddRange(curSessions.Where(x => x != null).ToList());
 
@@ -325,13 +328,11 @@ namespace OhmstudioManager
             try
             {
                 catalogCsvName = Path.Combine(subFolderPath, "sessions_catalog.csv");
-                using (TextWriter writer = new StreamWriter(catalogCsvName, false, Encoding.UTF8))
-                {
-                    var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                using TextWriter writer = new StreamWriter(catalogCsvName, false, Encoding.UTF8);
+                var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
-                    csv.Configuration.ShouldQuote = (field, context) => true;
-                    await csv.WriteRecordsAsync(Catalog.Select(x => x.FilterForCsv()).ToList()); // where values implements IEnumerable
-                }
+                csv.Configuration.ShouldQuote = (field, context) => true;
+                await csv.WriteRecordsAsync(Catalog.Select(x => x.FilterForCsv()).ToList()); // where values implements IEnumerable
             }
             catch (Exception ex)
             {
@@ -341,7 +342,7 @@ namespace OhmstudioManager
             // Write Mixdowns
             await Task.Run(() =>
             {
-                var mixdowns = curSessions.Where(x => x?.mixdown != null && x.mixdown.Length > 0 
+                var mixdowns = curSessions.Where(x => x?.mixdown != null && x.mixdown.Length > 0
                     && !string.IsNullOrEmpty(x.mixdown[0].url_m4a)).DistinctBy(x => x.mixdown[0].url_m4a).ToArray();
                 var total = mixdowns.Length;
 
@@ -368,7 +369,7 @@ namespace OhmstudioManager
                         {
                             Logger.Warn($"Failed to download file from: {uri}");
                         }
-                        
+
                         progressPct = ((double)count) / total * 100;
                         report(progressPct);
                     }
@@ -393,7 +394,7 @@ namespace OhmstudioManager
 
         static string GetProgramFilesx86()
         {
-            if( 8 == IntPtr.Size 
+            if (8 == IntPtr.Size
                 || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
             {
                 return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
@@ -409,18 +410,21 @@ namespace OhmstudioManager
             var cmd = $"{cmdPath}ohm_studio_client_url_hook.exe";
             if (!File.Exists(cmd))
             {
-                StateOwner.DisplayErrorDialog($"Could not find the ohmstudio process {cmd}", "Error while launching ohmstudio client.");
+                AppStateOwner.DisplayErrorDialog($"Could not find the ohmstudio process {cmd}", "Error while launching ohmstudio client.");
                 return false;
             }
-        try
-        {
-                if (!OhmLauncher.CheckIfLaunched(StateOwner)) return false;
+            try
+            {
+                if (!OhmLauncher.CheckIfLaunched(AppStateOwner)) return false;
                 var startInfo = new ProcessStartInfo
                 {
                     UseShellExecute = false
-                    , FileName = cmd
-                    , Arguments = args
-                    , WindowStyle = ProcessWindowStyle.Hidden
+                    ,
+                    FileName = cmd
+                    ,
+                    Arguments = args
+                    ,
+                    WindowStyle = ProcessWindowStyle.Hidden
                 };
 
                 Logger.Trace($"Attempting to launch ohmstudio with session {sessionid}, invocation: {cmd} {args} ");
@@ -433,13 +437,19 @@ namespace OhmstudioManager
             catch (Exception ex)
             {
                 var msg = $"Failed to launch ohm session {sessionid} from path: {cmdPath}. Exception{ex}";
-                StateOwner.DisplayErrorDialog(msg, $"Error While trying to launch ohmstudio client with session {sessionid}");
+                AppStateOwner.DisplayErrorDialog(msg, $"Error While trying to launch ohmstudio client with session {sessionid}");
                 return false;
-            }        
+            }
         }
 
         public void OnClosing()
         {
+            if (Settings.Default.UserSongOffset != InitialSliderOffsetPct)
+            {
+                Settings.Default.UserSongOffset = InitialSliderOffsetPct;
+            }
+
+            Settings.Default.Save();
             PlayLink(null);
         }
 
@@ -453,7 +463,7 @@ namespace OhmstudioManager
 
         }
 
-        public void PlayerControl(PlayerAction  playerAction)
+        public void PlayerControl(PlayerAction playerAction)
         {
             switch (playerAction)
             {
@@ -474,5 +484,45 @@ namespace OhmstudioManager
                     break;
             }
         }
+
+        /// <summary>
+        /// true if light color scheme is selected
+        /// </summary>
+        public bool? AppLightColorScheme
+        {
+            get => _appLightColorScheme;
+            set
+            {
+                if (_appLightColorScheme == value) return;
+                _appLightColorScheme = value;
+                AppStateOwner?.SetColorScheme(_appLightColorScheme == true ? AppColorScheme.Light : AppColorScheme.Dark);
+                Settings.Default.AppColorScheme = _appLightColorScheme == true ? AppColorScheme.Light.ToString() : AppColorScheme.Dark.ToString();
+                OnPropertyChanged();
+            }
+        }
+
+        private static bool? _appLightColorScheme = Settings.Default.AppColorScheme.Trim().ToLowerInvariant().StartsWith("light");
+
+        public void OnSaveToFolder(object sender, RoutedEventArgs e)
+        {
+            var folder = AppStateOwner.AskUserForFolder(DestinationFolder, "Select MyOhmSessions destination folder");
+            if (!string.IsNullOrEmpty(folder)) DestinationFolder = folder;
+        }
+
+        public bool ShowAboutAtStartup
+        {
+            get => _showAboutAtStartup;
+            set
+            {
+                if (_showAboutAtStartup == value) return;
+                _showAboutAtStartup = value;
+                Settings.Default.StartupShowAbout = _showAboutAtStartup;
+                Settings.Default.Save();
+                OnPropertyChanged();
+            }
+        }
+        private static bool _showAboutAtStartup = Settings.Default.StartupShowAbout;
+
+
     }
 }

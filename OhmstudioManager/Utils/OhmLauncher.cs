@@ -16,6 +16,7 @@
  */
 using OhmstudioManager;
 using System.Diagnostics;
+using OhmstudioManager.ViewModel;
 
 namespace MyOhmSessions
 {
@@ -31,7 +32,7 @@ namespace MyOhmSessions
             var pName2 = Process.GetProcessesByName(OhmStudioNetMp);
             return pName.Length != 0 && pName2.Length != 0;
         }
-        public static bool CheckIfLaunched(StateOwner parent)
+        public static bool CheckIfLaunched(IAppStateOwner parent)
         {
 
             while (!checkProcesses())

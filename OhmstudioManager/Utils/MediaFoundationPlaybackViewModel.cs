@@ -22,6 +22,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Threading;
+using OhmstudioManager.Properties;
 
 namespace OhmstudioManager.Utils
 {
@@ -46,11 +47,11 @@ namespace OhmstudioManager.Utils
         private double _sliderPosition;
         private readonly ObservableCollection<string> inputPathHistory;
         private string lastPlayed;
-        private StateOwner StateOwner { get; }
+        private IAppStateOwner AppStateOwner { get; }
 
-        public MediaFoundationPlaybackViewModel(StateOwner owner)
+        public MediaFoundationPlaybackViewModel(IAppStateOwner owner)
         {
-            StateOwner = owner;
+            AppStateOwner = owner;
             inputPathHistory = new ObservableCollection<string>();
             LoadCommand = new RelayCommand(Load, () => IsStopped);
             PlayCommand = new RelayCommand(Play, () => !IsPlaying);
@@ -102,7 +103,7 @@ namespace OhmstudioManager.Utils
             }
         }
 
-        private int _initialSliderOffsetPct;
+        private int _initialSliderOffsetPct = Settings.Default.UserSongOffset;
         public int InitialSliderOffsetPct
         {
             get => _initialSliderOffsetPct;
@@ -291,12 +292,12 @@ namespace OhmstudioManager.Utils
                 Logger.Warn(stoppedEventArgs.Exception, "Error while stopping file.");
             }
 
-            if (StateOwner.AutoPlaySetting && _wavePlayer?.PlaybackState == PlaybackState.Stopped)
+            if (AutoPlaySetting && _wavePlayer?.PlaybackState == PlaybackState.Stopped)
             {
                 CurrentlyPlaying = null;
                 if (_timer.IsEnabled) _timer.Stop();
 
-                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => StateOwner.OnPlaybackStopped())); // inform main app that playback just stopped, maybe time to play next song?
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => AppStateOwner.OnPlaybackStopped())); // inform main app that playback just stopped, maybe time to play next song?
                 // StateOwner.OnPlaybackStopped(); // inform main app that playback just stopped, maybe time to play next song?
             }
             OnPropertyChanged(nameof(IsPlaying));
@@ -323,13 +324,13 @@ namespace OhmstudioManager.Utils
             }
         }
 
-        public string MixdownFolder => Path.Combine(StateOwner.DestinationFolder, "Mixdowns");
+        public string MixdownFolder => Path.Combine(DestinationFolder, "Mixdowns");
         public string FullMixdownPath(string mixFileName) => string.IsNullOrEmpty(mixFileName) ? mixFileName : Path.Combine(MixdownFolder, mixFileName);
 
         public string CurrentlyPlaying { get; set; }
         public void PlayLink(string link, Result current = null)
         {
-            StateOwner.IndicateBusy(true);
+            AppStateOwner.IndicateBusy(true);
             try
             {
                 if (_wavePlayer != null && _wavePlayer.PlaybackState == PlaybackState.Playing)
@@ -367,7 +368,7 @@ namespace OhmstudioManager.Utils
                 try
                 {
                     InputPath = cached;
-                    if (StateOwner.AutoPlaySetting) Play();
+                    if (AutoPlaySetting) Play();
                 }
                 catch (Exception ex)
                 {
@@ -377,10 +378,69 @@ namespace OhmstudioManager.Utils
             }
             finally
             {
-                StateOwner.IndicateBusy(false);
+                AppStateOwner.IndicateBusy(false);
 
             }
         }
+
+        public string DestinationFolder
+        {
+            get => _destinationFolder;
+            set 
+            {
+                if (string.CompareOrdinal(_destinationFolder, value) == 0) return;
+                Settings.Default.UserDestinationFolder = _destinationFolder = value;
+                Settings.Default.Save();
+                OnPropertyChanged();
+            }
+        }
+        private string _destinationFolder = RetrieveDefaultDestinationFolder();
+        public static string RetrieveDefaultDestinationFolder()
+        {
+            var settingsFolder = Settings.Default.UserDestinationFolder;
+            if (string.IsNullOrWhiteSpace(settingsFolder))
+            {
+                settingsFolder = Settings.Default.UserDestinationFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+                Settings.Default.Save();
+            }
+            return settingsFolder;
+        }
+
+
+        public bool AutoPlaySetting
+        {
+            get => _autoPlaySetting;
+            set
+            {
+                if (_autoPlaySetting == value) return;
+                
+                Settings.Default.UserAutoPlayOn = _autoPlaySetting = value;
+                Settings.Default.Save();
+
+                OnPropertyChanged();
+                
+                if (_autoPlaySetting)
+                {
+                    var mix = CurrentItem?.ExtractMixdown();
+                    PlayLink(mix, CurrentItem);
+                }
+                else PlayLink(null);
+
+            }
+        }
+        private bool _autoPlaySetting = Settings.Default.UserAutoPlayOn;
+
+        public Result CurrentItem
+        {
+            get => _currentItem;
+            set
+            {
+                if (Equals(value, _currentItem)) return;
+                _currentItem = value;
+                OnPropertyChanged();
+            }
+        }
+        private Result _currentItem;
     }
 
 }
