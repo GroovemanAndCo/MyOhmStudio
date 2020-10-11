@@ -11,13 +11,6 @@ It reuses the following free software libraries:
 
 Id                                     LicenseUrl                                                            
 --                                     ----------                                                            
-System.Runtime.CompilerServices.Unsafe https://licenses.nuget.org/MIT                                        
-System.Threading.Tasks.Extensions      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
-System.ValueTuple                      https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
-Carbon.Data.Protection                 https://licenses.nuget.org/MIT                                        
-Carbon.Packaging                       https://licenses.nuget.org/MIT                                        
-Carbon.Storage                         https://licenses.nuget.org/MIT                                        
-Carbon.Versioning                      https://licenses.nuget.org/MIT                                        
 CsvHelper                              https://licenses.nuget.org/MS-PL%20OR%20Apache-2.0                    
 Microsoft.Bcl.AsyncInterfaces          https://licenses.nuget.org/MIT                                        
 Microsoft.Bcl.HashCode                 https://licenses.nuget.org/MIT                                        
@@ -30,6 +23,8 @@ NAudio.Vorbis                          https://aka.ms/deprecateLicenseUrl
 NAudio.Wma                             http://naudio.codeplex.com/license                                    
 Newtonsoft.Json                        https://licenses.nuget.org/MIT                                        
 NLog                                   https://github.com/NLog/NLog/blob/master/LICENSE.txt                  
+NUnit                                  https://aka.ms/deprecateLicenseUrl                                    
+NUnit3TestAdapter                      https://aka.ms/deprecateLicenseUrl                                    
 NVorbis                                https://aka.ms/deprecateLicenseUrl                                    
 Octokit                                https://github.com/octokit/octokit.net/blob/master/LICENSE.txt        
 Semver                                 https://licenses.nuget.org/MIT                                        
@@ -49,5 +44,6 @@ NLog.Schema                            https://github.com/NLog/NLog/blob/master/
 NlogViewer                                                                                                   
 slf4net                                https://licenses.nuget.org/MIT                                        
 slf4net.NLog                           https://licenses.nuget.org/MIT                                        
+Tools.InnoSetup                        https://aka.ms/deprecateLicenseUrl                                    
 WindowsAPICodePack-Core                https://github.com/aybe/Windows-API-Code-Pack-1.1/blob/master/LICENCE 
 WindowsAPICodePack-Shell               http://code.msdn.microsoft.com/WindowsAPICodePack/Project/License.aspx
