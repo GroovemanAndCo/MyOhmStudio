@@ -140,14 +140,6 @@ namespace MyOhmSessions.UI
         public MainWindow()
         {
             SetupUncaughtExceptionHandlers();
-            
-            //s = HttpUtils.Get(@"https://github.com/GroovemanAndCo/MyOhmStudio/releases/latest");
-            //var n  = s?.IndexOf("<title>") ?? -1;
-            //if (n>0)
-            //{
-            //    s = s.Substring(0, n);
-            //}
-
             UiUtils.CursorStartWait();
             MainViewModel = new MainViewModel(this);
             InitializeComponent();

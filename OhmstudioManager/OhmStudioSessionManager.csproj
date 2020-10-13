@@ -146,6 +146,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\EncodeUtils.cs" />
     <Compile Include="Utils\GitHubReleaseManager.cs" />
     <Compile Include="ViewModel\AppColorScheme.cs" />
     <Compile Include="Utils\MediaFoundationPlaybackViewModel.cs" />

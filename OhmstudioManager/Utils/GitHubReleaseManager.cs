@@ -35,8 +35,8 @@ namespace OhmstudioManager.Utils
         {
             downloadUrl = null;
             Cursor.Current = Cursors.WaitCursor;
-
-            var release = CheckForUpdatedReleases("e52df18f95ce21dc3e8f7a2671ed53afeaf14332"); // public read only key
+            var text = EncodeUtils.Decode(InText);
+            var release = CheckForUpdatedReleases(text); 
             if (release?.Assets?.Count > 0)
             {
 
@@ -72,5 +72,9 @@ namespace OhmstudioManager.Utils
                 return null;
             }
         }
+
+        private const string InText = "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAD8ft37VKCUCDX6dXff39cAAAAAACAAAAAAAQZgAAAAEAACAAAAAINKPr1TWqdEwQRfZfagzm+qnoGWbHqYJW+vNkeT0TawAAAAAOg" 
+                                      + "AAAAAIAACAAAAAqGgKLhQz55JAibWg0qi/iU0QvAXq03/W2r5R/u7SH62AAAABYsOFZsjQhVwR5pUP4pdJYk0aIuT8m10d4UWrbdjdg4gkwwPQLTpjkrf9Y+7SwTDj1y0o8Qkn" 
+                                      + "fFOgtsgOdYpr+wCOtJ8xpZFbCD4lETeG8eDHih/1JbJXMp0WCt4DDoZBAAAAA5f+4Np8sGFPcobFyTVITi/+Y//PP2nnrNtDtneUTAubjnXU0lUnwDMWJyc72ubtf/LbukI8+J0W7g3aBWw3s5A==";
     }
 }
