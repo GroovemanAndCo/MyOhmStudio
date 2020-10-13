@@ -17,12 +17,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NLog;
 using Octokit;
 
 namespace OhmstudioManager.Utils
 {
     public static class GitHubReleasesManager
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Get the latest tag update from the website or null if not found
         /// </summary>
@@ -33,13 +36,13 @@ namespace OhmstudioManager.Utils
             downloadUrl = null;
             Cursor.Current = Cursors.WaitCursor;
 
-            var release = CheckForUpdatedReleases("db7b37e702b712caf82f9afaa85e27733a7d6b9b"); // public read only key
-            if (release?.Assets.Count > 0)
+            var release = CheckForUpdatedReleases("e52df18f95ce21dc3e8f7a2671ed53afeaf14332"); // public read only key
+            if (release?.Assets?.Count > 0)
             {
 
                 var exe = release.Assets.Where(x => x.Name.EndsWith(".exe")).FirstOrDefault();
                 if (exe==null) return null;
-                downloadUrl = exe?.BrowserDownloadUrl;
+                downloadUrl = exe.BrowserDownloadUrl;
                 return release.TagName;
             }
 
@@ -52,13 +55,22 @@ namespace OhmstudioManager.Utils
         public static Release CheckForUpdatedReleases(string api_key)
         {
             var client = new GitHubClient(new ProductHeaderValue("MyOhmSessions", "v1.3.2"));
-            client.Credentials = new Credentials(api_key);
-            var result = Task.Run(() => client.Repository.Release.GetAll("GroovemanAndCo", "MyOhmStudio"));
-            if (!result.Wait(5000)) return null;
-            var releases = result.Result;
-            if (releases?.Count==0 ) return null;
-            var release = releases.OrderByDescending(x => x.TagName).First();
-            return release;
+            try
+            {
+                client.Credentials = new Credentials(api_key);
+                var result = Task.Run(() => client.Repository.Release.GetAll("GroovemanAndCo", "MyOhmStudio"));
+                if (!result.Wait(5000)) return null;
+                var releases = result.Result;
+                if (releases==null || releases.Count == 0) return null;
+                var release = releases.OrderByDescending(x => x.TagName).First();
+                return release;
+
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warn(ex, $"Failed to access the github server with public key: {api_key}");
+                return null;
+            }
         }
     }
 }
