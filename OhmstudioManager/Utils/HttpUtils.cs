@@ -78,10 +78,10 @@ namespace OhmstudioManager.Utils
             return result;
         }
 
-        public static void Authenticate()
+        public static void Authenticate(string username, string pass )
         {
 
-            User user = new User("grooveman", "@20Music17!");
+            User user = new User(username, pass);
             var url = "http://www.ohmstudio.com/auth";
             try
             {

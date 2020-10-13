@@ -24,12 +24,10 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using AdonisUI;
-using MyOhmSessions.Properties;
 using NLog;
 using OhmstudioManager;
 using OhmstudioManager.Json;
@@ -140,6 +138,14 @@ namespace MyOhmSessions.UI
         public MainWindow()
         {
             SetupUncaughtExceptionHandlers();
+            // GitHubReleasesManager.CheckForReleases(api_key);
+            //var s = HttpUtils.Get(@"https://github.com/GroovemanAndCo/MyOhmStudio/releases/latest");
+            //var n  = s?.IndexOf("<title>") ?? -1;
+            //if (n>0)
+            //{
+            //    s = s.Substring(0, n);
+            //}
+
             UiUtils.CursorStartWait();
             MainViewModel = new MainViewModel(this);
             InitializeComponent();
