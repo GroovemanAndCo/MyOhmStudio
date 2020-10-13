@@ -153,10 +153,9 @@
     <Compile Include="Utils\HttpUtils.cs" />
     <Compile Include="Json\JsonFullRoot.cs" />
     <Compile Include="Json\JsonProjectRoot.cs" />
-    <Compile Include="Json\MyProjects.cs" />
     <Compile Include="Utils\OhmLauncher.cs" />
     <Compile Include="MainViewModel.cs" />
-    <Compile Include="Json\Result.cs" />
+    <Compile Include="Json\JsonFullRootResult.cs" />
     <Compile Include="ViewModel\StateOwner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\PlayerAction.cs" />

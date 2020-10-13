@@ -16,7 +16,7 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AppVersion>1.3.2</AppVersion>
+    <AppVersion>1.3.3</AppVersion>
   </PropertyGroup>
 
   <ItemGroup>

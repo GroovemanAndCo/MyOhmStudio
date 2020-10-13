@@ -218,6 +218,12 @@
                                 <Image Source="../Images/info.png" Width="32" VerticalAlignment="Top"  />
                             </Button>
 
+                            <Button Width="50" Background="Transparent" BorderThickness="0" 
+                                    Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Padding="8, 4"
+                                    Click="OnCheckUpdate" ToolTip="Check for updates...">
+                                <Image Source="../Images/checkupdate.png" Width="32" VerticalAlignment="Top"  />
+                            </Button>
+
                         </WrapPanel>
                     </Border>
                     <WrapPanel Margin="4,5"  Orientation="Horizontal">

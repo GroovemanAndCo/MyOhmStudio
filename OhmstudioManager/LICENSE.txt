@@ -9,6 +9,8 @@ You can redistribute it under the terms of the GPL v3.0 license.
 
 It reuses the following free software libraries:
 
+PM> Get-Package | Select-Object Id,LicenseUrl
+
 Id                                     LicenseUrl                                                            
 --                                     ----------                                                            
 CsvHelper                              https://licenses.nuget.org/MS-PL%20OR%20Apache-2.0                    
@@ -26,11 +28,13 @@ NLog                                   https://github.com/NLog/NLog/blob/master/
 NUnit                                  https://aka.ms/deprecateLicenseUrl                                    
 NUnit3TestAdapter                      https://aka.ms/deprecateLicenseUrl                                    
 NVorbis                                https://aka.ms/deprecateLicenseUrl                                    
-Octokit                                https://github.com/octokit/octokit.net/blob/master/LICENSE.txt        
+Octokit                                https://licenses.nuget.org/MIT                                        
+Octokit.Reactive                       https://licenses.nuget.org/MIT                                        
 Semver                                 https://licenses.nuget.org/MIT                                        
 System.Buffers                         https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
 System.Memory                          https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
 System.Numerics.Vectors                https://github.com/dotnet/corefx/blob/master/LICENSE.TXT              
+System.Reactive                        https://licenses.nuget.org/MIT                                        
 System.Runtime.CompilerServices.Unsafe https://licenses.nuget.org/MIT                                        
 System.Text.Encodings.Web              https://licenses.nuget.org/MIT                                        
 System.Text.Json                       https://licenses.nuget.org/MIT                                        

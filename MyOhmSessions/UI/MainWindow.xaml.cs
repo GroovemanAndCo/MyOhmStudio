@@ -28,9 +28,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using AdonisUI;
+using AdonisUI.Controls;
 using NLog;
 using OhmstudioManager;
 using OhmstudioManager.Json;
+using OhmstudioManager.Properties;
 using OhmstudioManager.Utils;
 using OhmstudioManager.ViewModel;
 using Application = System.Windows.Forms.Application;
@@ -138,8 +140,8 @@ namespace MyOhmSessions.UI
         public MainWindow()
         {
             SetupUncaughtExceptionHandlers();
-            // GitHubReleasesManager.CheckForReleases(api_key);
-            //var s = HttpUtils.Get(@"https://github.com/GroovemanAndCo/MyOhmStudio/releases/latest");
+            
+            //s = HttpUtils.Get(@"https://github.com/GroovemanAndCo/MyOhmStudio/releases/latest");
             //var n  = s?.IndexOf("<title>") ?? -1;
             //if (n>0)
             //{
@@ -338,7 +340,7 @@ namespace MyOhmSessions.UI
             {
                 var uri = MainViewModel.CurrentItem.mixdown[0].url_m4a;
                 if (string.IsNullOrWhiteSpace(uri)) return;
-                if (HttpUtils.DownloadFile(uri, MainViewModel.CurrentItem.MixdownFileName, MainViewModel.MixdownFolder))
+                if (HttpUtils.DownloadFile(uri, Path.Combine(MainViewModel.MixdownFolder, MainViewModel.CurrentItem.MixdownFileName)))
                 {
                     Logger.Info($"Successfully downloaded mixdown '{uri}' for title '{MainViewModel.CurrentItem.title}' ");
                 }
@@ -433,18 +435,18 @@ namespace MyOhmSessions.UI
         public void DisplayInfoDialog(string message, string title)
         {
             Logger.Info($"Info Dialog: '{message}' with title '{title}'");
-            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public bool DisplayInfoDialogOkCancel(string message, string title)
         {
-            var result = MessageBox.Show("Please Launch the OhmStudio client and authenticate then click Ok", 
+            var result = MessageBox.Show(this, "Please Launch the OhmStudio client and authenticate then click Ok", 
                 "OhmStudio is not launched", MessageBoxButton.OKCancel, MessageBoxImage.Information);
             return result != MessageBoxResult.Cancel;
         }
         public bool DisplayWarningDialogOkCancel(string message, string title)
         {
-            var result = MessageBox.Show("Please Launch the OhmStudio client and authenticate then click Ok", 
+            var result = MessageBox.Show(this, "Please Launch the OhmStudio client and authenticate then click Ok", 
                 "OhmStudio is not launched", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             return result != MessageBoxResult.Cancel;
         }
@@ -489,14 +491,80 @@ namespace MyOhmSessions.UI
 
         private void OnPlayerPlayResume(object sender, RoutedEventArgs e)  => MainViewModel.PlayerControl(PlayerAction.Play);
 
+        private  MessageBoxResult QuestionDontShowAgain(string text, string title, string checkMsg, bool checkstate, out bool rchecked)
+        {
+            rchecked=checkstate;
+            
+            var messageBox = new MessageBoxModel
+            {
+                Text = text,
+                Caption = title,
+                Icon = MessageBoxImage.Question,
+                Buttons = new []
+                {
+                    MessageBoxButtons.Yes(),
+                    MessageBoxButtons.No(),
+                },
+                CheckBoxes = new []
+                {
+                    new MessageBoxCheckBoxModel(checkMsg)
+                    {
+                        IsChecked = rchecked,
+                        Placement = MessageBoxCheckBoxPlacement.BelowText,
+                    },
+                },
+                IsSoundEnabled = false,
+            };
+            var ret = MessageBox.Show(this, messageBox);
+            rchecked = messageBox.CheckBoxes.First().IsChecked;
+            return ret;
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (MainViewModel.ShowAboutAtStartup)
-            {
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action (() => new AboutDialog(this, MainViewModel).ShowDialog()) );
-            }
+            if (Settings.Default.CheckForUpdatesOnStartup) OnCheckUpdate(null, null);
+            if (MainViewModel.ShowAboutAtStartup) Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action (() => new AboutDialog(this, MainViewModel).ShowDialog()) );
         }
 
         private void OnSaveToFolder(object sender, RoutedEventArgs e) => MainViewModel.OnSaveToFolder(sender, e);
+
+        private void OnCheckUpdate(object sender, RoutedEventArgs e)
+        {
+            bool checkFoundNoUpdate=false;
+            var latestTagVersion = GitHubReleasesManager.GetUpdates(out var dlUrl);
+            if (string.IsNullOrWhiteSpace(latestTagVersion)) checkFoundNoUpdate=true;
+
+            if (!checkFoundNoUpdate) 
+            {
+                var ver = AboutDialog.Version;
+                if (!Version.TryParse(latestTagVersion, out var dlVer) || dlVer <= ver) 
+                    checkFoundNoUpdate = true;
+            }
+
+            const string caption = "Check for updates";
+            if (checkFoundNoUpdate && sender!=null) // if called manually from the interface always provide feedback to user:
+            {
+                DisplayInfoDialog("Could not find a newer update.", caption);
+            }
+            if (checkFoundNoUpdate) return;
+            
+            var result = QuestionDontShowAgain($"Update version {latestTagVersion} is available.\n\nWould you like to update now?", caption, 
+                "Check at startup.", Settings.Default.CheckForUpdatesOnStartup, out var rchecked);
+            Settings.Default.CheckForUpdatesOnStartup = rchecked;
+            if (result != MessageBoxResult.Yes) return;
+            UiUtils.CursorStartWait();
+            try
+            {
+
+                var setupFile = HttpUtils.DownloadLatestVersion(dlUrl);
+                Close(); // close our app after this method completes
+                Process.Start(setupFile); // start the setup
+
+            }
+            finally
+            {
+                UiUtils.CursorStopWait();
+            }
+        }
     }
 }

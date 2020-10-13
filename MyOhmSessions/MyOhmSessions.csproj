@@ -136,6 +136,7 @@
     <Resource Include="Images\yinyang.png" />
     <Resource Include="Images\downloadall.png" />
     <Resource Include="Images\stop.png" />
+    <Resource Include="Images\checkupdate.png" />
     <Content Include="install\install.iss" />
     <Content Include="install\install.iss.in" />
     <None Include="NLog.config">
@@ -219,6 +220,6 @@
     <Error Condition="!Exists('..\packages\Tools.InnoSetup.6.0.5\build\Tools.InnoSetup.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tools.InnoSetup.6.0.5\build\Tools.InnoSetup.props'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent  Condition=" '$(Configuration)' == 'Release' ">$(SolutionDir)packages\Tools.InnoSetup.6.0.5\tools\ISCC.exe  $(ProjectDir)install\install.iss</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(Configuration)' == 'Release' ">$(SolutionDir)packages\Tools.InnoSetup.6.0.5\tools\ISCC.exe  $(ProjectDir)install\install.iss</PostBuildEvent>
   </PropertyGroup>
 </Project>

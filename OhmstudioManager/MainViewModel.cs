@@ -365,7 +365,7 @@ namespace OhmstudioManager
                         var mixdownName = it.MixdownFileName;
                         lock (AccessMixdownLock) it.CachedPath = FullMixdownPath(mixdownName);
 
-                        if (!HttpUtils.DownloadFile(uri, mixdownName, MixdownFolder))
+                        if (!HttpUtils.DownloadFile(uri, Path.Combine(MixdownFolder,mixdownName)))
                         {
                             Logger.Warn($"Failed to download file from: {uri}");
                         }

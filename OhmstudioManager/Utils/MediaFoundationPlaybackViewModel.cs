@@ -352,7 +352,7 @@ namespace OhmstudioManager.Utils
                 if (!File.Exists(cached))
                 {
                     // Okay no way to find a cached file version so try download from web:
-                    if (HttpUtils.DownloadFile(link, mixdownFileName, MixdownFolder))
+                    if (HttpUtils.DownloadFile(link, Path.Combine(MixdownFolder, mixdownFileName)))
                     {
                         Logger.Info($"Successfully downloaded mixdown '{link}' for title '{current.title}' ");
                         current.CachedPath = cached;

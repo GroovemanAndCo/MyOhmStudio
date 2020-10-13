@@ -15,6 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -182,27 +183,23 @@ namespace OhmstudioManager.Utils
 
         static int counter;
         private static readonly object counterLock = new object();
-        public static bool DownloadFile(string uri, string mixdownFileName, string mixDownFolder)
+        public static bool DownloadFile(string uri, string destPath) // string fileName, string folder)
         {
+            if (string.IsNullOrWhiteSpace(destPath)) return false;
+            var folder = Path.GetDirectoryName(destPath);
+            var fileName = Path.GetFileName(destPath);
+
             try
             {
-                string destPath;
-                int count;
 
-                lock (counterLock)
-                {
-                    counter++;
-                    count = counter;
-                    if (!Directory.Exists(mixDownFolder)) Directory.CreateDirectory(mixDownFolder);
-                    destPath = Path.Combine(mixDownFolder, mixdownFileName);
-                }
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
                 if (File.Exists(destPath))
                 {
-                    Logger.Trace($"File {mixdownFileName} [{count}] already exists in {mixDownFolder}, skipping ...");
+                    Logger.Trace($"File {fileName} already exists in {folder}, skipping ...");
                     return true;
                 }
 
-                if (!Directory.Exists(mixDownFolder)) Directory.CreateDirectory(mixDownFolder);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
                 using (var wc = new WebClient())
                 {
@@ -218,12 +215,13 @@ namespace OhmstudioManager.Utils
             catch (Exception ex)
             {
 
-                Logger.Error(ex, $"Failed to download file with mixdownFileName {mixdownFileName} to destination directory {mixDownFolder}");
+                Logger.Error(ex, $"Failed to download file with mixdownFileName {fileName} to destination directory {folder}");
                 return false;
             }
 
             return true;
         }
+
         public static string DownloadString(string uri)
         {
             string ret;
@@ -246,6 +244,18 @@ namespace OhmstudioManager.Utils
             }
 
             return ret;
+        }
+
+
+        public static string DownloadLatestVersion(string downloadUrl)
+        {
+            var userDownloadFilename= Path.GetTempFileName();
+            userDownloadFilename = Path.Combine(Path.GetDirectoryName(userDownloadFilename),
+                "MyOhmSessionsSetup_" + Path.GetFileNameWithoutExtension(userDownloadFilename) + ".exe");
+            var timeStamp = DateTime.Now.ToString(@"YYMMDD_HHmmssfff");
+            var setupFile = Path.ChangeExtension(userDownloadFilename, ".exe");
+            var res = DownloadFile(downloadUrl, setupFile);
+            return res ? setupFile : null;
         }
 
     }
