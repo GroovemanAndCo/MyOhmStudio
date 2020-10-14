@@ -30,7 +30,7 @@ namespace OhmstudioManager.Utils
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static DataProtectionScope Scope = DataProtectionScope.CurrentUser;
+        private static DataProtectionScope Scope = DataProtectionScope.LocalMachine;
 
         /// Encodes a given string
         public static string Encode(string text)
