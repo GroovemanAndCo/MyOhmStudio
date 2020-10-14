@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="Utils\EncodeUtils.cs" />
     <Compile Include="Utils\GitHubReleaseManager.cs" />
+    <Compile Include="Utils\OsInfo.cs" />
     <Compile Include="ViewModel\AppColorScheme.cs" />
     <Compile Include="Utils\MediaFoundationPlaybackViewModel.cs" />
     <Compile Include="Utils\FileUtils.cs" />

@@ -17,9 +17,9 @@
 
 using System;
 using System.Linq;
-using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using NLog;
 
 namespace OhmstudioManager.Utils
 {
@@ -28,6 +28,8 @@ namespace OhmstudioManager.Utils
     /// </summary>
     public static class EncodeUtils
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private static DataProtectionScope Scope = DataProtectionScope.CurrentUser;
 
         /// Encodes a given string
@@ -48,10 +50,20 @@ namespace OhmstudioManager.Utils
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             //parse base64 string
-            byte[] data1 = Convert.FromBase64String(text);
-            byte[] data2 = ProtectedData.Unprotect(data1, null, Scope);
-            byte[] result = data2.Select(x => x -= AppCustomSeed).ToArray();
-            return Encoding.Unicode.GetString(result);
+            try
+            {
+                byte[] data1 = Convert.FromBase64String(text);
+                byte[] data2 = ProtectedData.Unprotect(data1, null, Scope);
+                byte[] result = data2.Select(x => x -= AppCustomSeed).ToArray();
+                return Encoding.Unicode.GetString(result);
+
+            }
+            catch (Exception ex)
+            {
+
+                Logger.Warn("Failed to use the github api, auto-updates won't be available.");
+                return null;
+            }
         }
 
         private const byte AppCustomSeed = 0x42;

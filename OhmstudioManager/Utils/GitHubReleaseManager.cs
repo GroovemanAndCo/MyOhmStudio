@@ -25,7 +25,7 @@ namespace OhmstudioManager.Utils
     public static class GitHubReleasesManager
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+        private const string UpdateUrl = @"https://github.com/GroovemanAndCo/MyOhmStudio/releases";
         /// <summary>
         /// Get the latest tag update from the website or null if not found
         /// </summary>
@@ -34,26 +34,35 @@ namespace OhmstudioManager.Utils
         public static string GetUpdates(out string downloadUrl)
         {
             downloadUrl = null;
-            Cursor.Current = Cursors.WaitCursor;
-            var text = EncodeUtils.Decode(InText);
-            var release = CheckForUpdatedReleases(text); 
-            if (release?.Assets?.Count > 0)
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                var text = EncodeUtils.Decode(InText);
+                var release = CheckForUpdatedReleases(text);
+                if (release?.Assets?.Count > 0)
+                {
+
+                    var exe = release.Assets.FirstOrDefault(x => x.Name.EndsWith(".exe"));
+                    if (exe == null) return null;
+                    downloadUrl = exe.BrowserDownloadUrl;
+                    return release.TagName;
+                }
+
+                Cursor.Current = Cursors.Default;
+
+            }
+            catch (System.Exception ex)
             {
 
-                var exe = release.Assets.Where(x => x.Name.EndsWith(".exe")).FirstOrDefault();
-                if (exe==null) return null;
-                downloadUrl = exe.BrowserDownloadUrl;
-                return release.TagName;
+                Logger.Warn(ex, $"Failed to retrieve retrieve updates, please check them manually at {UpdateUrl}.");
             }
-
-            Cursor.Current = Cursors.Default;
-
             return null;
 
         }
 
         public static Release CheckForUpdatedReleases(string api_key)
         {
+            if (api_key==null) return null;
             var client = new GitHubClient(new ProductHeaderValue("MyOhmSessions", "v1.3.2"));
             try
             {

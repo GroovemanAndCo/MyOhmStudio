@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,6 +68,17 @@ namespace MyOhmSessions.UI
             Application.SetUnhandledExceptionMode(System.Windows.Forms.UnhandledExceptionMode.CatchException);
 
         }
+
+        [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsWow64Process(
+            [In] IntPtr hProcess,
+            [Out] out bool wow64Process
+        );
+
+        private static readonly string _osInfo = 
+            $"[OS: {OsInfo.OsVersion()} {(OsInfo.OsIs64Bit ? "64":"32")}-bit, Runtime: {Environment.Version}]";
+
         private static void UIThreadException(object sender, ThreadExceptionEventArgs e) => MyExceptionHandler(e.Exception, true);
         void App_DomainUnhandledException(object sender, UnhandledExceptionEventArgs e) => MyExceptionHandler(e.ExceptionObject, e.IsTerminating);
         /// <summary>
@@ -78,7 +90,7 @@ namespace MyOhmSessions.UI
         {
             if (!isTerminating)
             {
-                Logger.Error(exceptionObject as Exception, "Intercepted resumable unhandled exception.");
+                Logger?.Error(exceptionObject as Exception, "Intercepted resumable unhandled exception.");
                 return;
             }
 
@@ -88,7 +100,7 @@ namespace MyOhmSessions.UI
                 
                 if (Logger != null)
                 {
-                    var m = "Something went wrong... The application will now close. ";
+                    var m = $"Something went wrong... The application will now close. {_osInfo}";
                     if (exceptionObject is Exception e)
                     {
                         Logger.Error(e,  m);
@@ -140,6 +152,8 @@ namespace MyOhmSessions.UI
         public MainWindow()
         {
             SetupUncaughtExceptionHandlers();
+            Logger.Info($"OS Info: {_osInfo}");
+
             UiUtils.CursorStartWait();
             MainViewModel = new MainViewModel(this);
             InitializeComponent();
@@ -558,5 +572,7 @@ namespace MyOhmSessions.UI
                 UiUtils.CursorStopWait();
             }
         }
+
+
     }
 }
