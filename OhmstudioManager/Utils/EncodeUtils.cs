@@ -40,7 +40,7 @@ namespace OhmstudioManager.Utils
             //encrypt data
             var data = Encoding.Unicode.GetBytes(text);
             byte[] data1 = data.Select(x => x += AppCustomSeed).ToArray();
-            byte[] data2 = ProtectedData.Protect(data1, null, Scope);
+            byte[] data2 = System.Web.Security.MachineKey.Protect(data1, null);
             return Convert.ToBase64String(data2);
         }
 
@@ -53,7 +53,7 @@ namespace OhmstudioManager.Utils
             try
             {
                 byte[] data1 = Convert.FromBase64String(text);
-                byte[] data2 = ProtectedData.Unprotect(data1, null, Scope);
+                byte[] data2 =  System.Web.Security.MachineKey.Unprotect(data1, null);
                 byte[] result = data2.Select(x => x -= AppCustomSeed).ToArray();
                 return Encoding.Unicode.GetString(result);
 
@@ -61,7 +61,7 @@ namespace OhmstudioManager.Utils
             catch (Exception ex)
             {
 
-                Logger.Warn("Failed to use the github api, auto-updates won't be available.");
+                Logger.Warn(ex, "Failed to use the github api, auto-updates won't be available.");
                 return null;
             }
         }
