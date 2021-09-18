@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MyOhmSessions"
-#define MyAppVersion "1.3.3.4"
+#define MyAppVersion "1.3.3.5"
 #define MyAppPublisher "Grooveman & Co"
 #define MyAppURL "https://github.com/fab672000/MyOhmStudio/releases"
 #define MyAppExeName "MyOhmSessions.exe"
