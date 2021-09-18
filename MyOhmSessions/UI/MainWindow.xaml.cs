@@ -548,11 +548,11 @@ namespace MyOhmSessions.UI
             }
 
             const string caption = "Check for updates";
-            if (checkFoundNoUpdate && sender!=null) // if called manually from the interface always provide feedback to user:
-            {
-                DisplayInfoDialog("Could not find a newer update.", caption);
+            if (checkFoundNoUpdate )
+            {   // if called manually from the interface, always provide feedback to user:
+                if (sender!=null) DisplayInfoDialog("Could not find a newer update.", caption);
+                return;
             }
-            if (checkFoundNoUpdate) return;
             
             var result = QuestionDontShowAgain($"Update version {latestTagVersion} is available.\n\nWould you like to update now?", caption, 
                 "Check at startup.", Settings.Default.CheckForUpdatesOnStartup, out var rchecked);

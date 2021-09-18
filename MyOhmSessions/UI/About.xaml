@@ -69,7 +69,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="5"/>
                         <RowDefinition Height="Auto"/>
@@ -104,6 +104,7 @@
                         <Run  Text="    Repeat the operation by replacing 0 by the next page number." />
                     </TextBlock> 
                     <TextBlock Grid.Row="7" Grid.Column="1" Text="Then run the tool, it will automatically load and merge all the sessions for you." />
+                    <TextBlock Grid.Row="8" Grid.Column="1" Text="Don't wait too long as Ohmstudio.com will shut down by Sept. 30th, 2021!" Foreground="Orange"  />
                     <TextBlock Grid.Row="9" Grid.Column="0" FontWeight="Bold" Foreground="Goldenrod"  TextWrapping="Wrap" Text="Development" />
                     <TextBlock Grid.Row="9" Grid.Column="1" TextWrapping="Wrap" Text="Fabien (a.k.a. Grooveman)." />
                     <TextBlock Grid.Row="11" Grid.Column="0" FontWeight="Bold" Foreground="Goldenrod"  TextWrapping="Wrap" Text="Contributors" />

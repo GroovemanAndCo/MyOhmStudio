@@ -82,6 +82,6 @@ namespace OhmstudioManager.Utils
             }
         }
 
-        private const string InText = "H+H0tismjpivzArVtJDeV8vLp91nEIfiCfPzv/lJ4OipkfPvdLLTcw+oG6TummgHKH5XHsZiyYhesUNnQYPaRLWpGSdY3R41yuMtR5ajc0aA826gmdTUM/ho/nmUkdOwbmk+AFViyzM4MPxIkXGjc6nV7cUXVQ83loTeH0XJRGPhy8HlGb/RRp4GIIPUuMgT";
+        private const string InText = "j01hL3pqIOReDXn4o0BEuGOJuJdjFI/c3UGgUkWPVL80dkrUcxEWvrRYU8Mh9ENGaJYLg0GrUU6XwZ3bE0W7UakahzTHSXSJDFxf12bLJgTMI2eNRQcQ+5hvn6y2w4+NPLDmXNal83izMXUzkC3ELuZ02OHPnSYs9lIJZCCBTi1bVUxhfWBWCC0hC7di7C69";
     }
 }
