@@ -1,3 +1,4 @@
 MyOhmSessions/bin/
 packages/
 *.DotSettings
+.vs/

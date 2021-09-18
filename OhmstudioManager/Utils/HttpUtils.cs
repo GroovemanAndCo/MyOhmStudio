@@ -180,7 +180,6 @@ namespace OhmstudioManager.Utils
             return response.Result;
         }
 
-        static int counter;
         private static readonly object counterLock = new object();
         public static bool DownloadFile(string uri, string destPath) // string fileName, string folder)
         {
